@@ -45,14 +45,18 @@ src/tabs/Home/Home.jsx
 src/tabs/Home/components/*      (ViewsCard, FollowerCard, TopReelsCard, any new ones)
 ```
 
-**Claude 3 — Reel Input and AI Chat tabs**
+**Claude 3 — Reel Input tab**
 
 ```
-src/tabs/ReelInput/ReelInput.jsx        src/tabs/AIChat/AIChat.jsx
-src/tabs/ReelInput/components/*         src/tabs/AIChat/components/*
-  (ReelForm, StatField, RankResult)       (TypeGoalControls, IdeaList, IdeaCard)
-                                        src/tabs/AIChat/ideaGenerator.js  (styling only)
+src/tabs/ReelInput/ReelInput.jsx
+src/tabs/ReelInput/components/*   (ReelForm, StatField, RankResult)
 ```
+
+**AI chat tab — split between Claude 2 and Claude 3**
+
+Ownership inside that tab is per-component, not per-tab. It is spelled out in
+`src/tabs/AIChat/AICHAT.md`; read that file before touching anything under `src/tabs/AIChat/`.
+`AIChat.jsx` and `ideaGenerator.js` belong to Claude 1.
 
 ## Done already (Claude 1)
 
@@ -69,20 +73,22 @@ Poppins wired in `index.html`; `tokens.css` rewritten with the glow tokens and t
    write your own card markup and do not edit `ReelCard`.
 4. Empty state: "No reels logged yet — add your first above."
 
-## Claude 3 — Reel Input and AI Chat
+## Claude 3 — Reel Input
 
-1. Every container in both tabs moves to the design language above.
+1. Every container moves to the design language above.
 2. `ReelForm` / `StatField` — inputs and selects use `.field` from `tokens.css`. They stay controlled; leave
    `onChange` / `onClick` alone.
 3. `RankResult` — same treatment as Home's stat boxes so the tabs read as one system. Tier labels use token
    colors.
-4. `TypeGoalControls` — both dropdowns match the restyled fields.
-5. `IdeaList` / `IdeaCard` — 3–5 square cards in a flex layout, matching `ReelCard`'s visual weight without
-   importing or duplicating it.
 
-Known violations to clear: inline `borderRadius` in `IdeaCard.jsx`, `StatField.jsx`, `TypeGoalControls.jsx`,
-`ReelForm.jsx`, plus several `border: '1px solid var(--line)'`. Inline styles beat the global radius reset,
-so they have to be deleted by hand.
+Known violations to clear: inline `borderRadius` in `StatField.jsx` and `ReelForm.jsx`, plus several
+`border: '1px solid var(--line)'`. Inline styles beat the global radius reset, so they have to be deleted by
+hand.
+
+## AI chat — both workers
+
+See `src/tabs/AIChat/AICHAT.md`. Claude 2 builds the message thread, Claude 3 builds the composer, and they
+run in parallel against contracts Claude 1 freezes in `AIChat.jsx` first.
 
 ## Requests
 
