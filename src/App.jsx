@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import TabNav from './shared/TabNav.jsx'
+import TabNav from './components/TabNav.jsx'
 import { useReels } from './shared/useReels.js'
 import Home from './tabs/Home/Home.jsx'
 import ReelInput from './tabs/ReelInput/ReelInput.jsx'

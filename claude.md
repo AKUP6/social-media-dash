@@ -39,8 +39,9 @@ Redesign all three tabs to look intentional and human-made, not AI-generated. Ev
 index.html
 src/main.jsx
 src/App.jsx
+src/components/                (ALL of it — app-wide chrome)
+  TabNav.jsx                   (the tab bar)
 src/shared/tokens.css
-src/shared/TabNav.jsx
 src/shared/ReelCard.jsx        (new — the shared reel card)
 src/shared/types.js
 src/shared/mockData.js
@@ -64,7 +65,7 @@ CLAUDE.md
 4. Resolve the image gap: `Reel` has no image field today. As the only Claude allowed to touch `types.js` and
    `mockData.js`, add `thumbnail: string` to the `Reel` typedef and seed URLs (or a token-colored placeholder
    block) in `mockData.js`, then tell Claude 2 the field name. Nobody else adds this field.
-5. Restyle `TabNav.jsx` as Google-style tabs — underline on the active tab, muted inactive labels, no pill
+5. Restyle `src/components/TabNav.jsx` as Google-style tabs — underline on the active tab, muted inactive labels, no pill
    backgrounds, no radius.
 6. Commit tokens + `ReelCard` + `TabNav` **before** unblocking the workers.
 7. After both workers land: review every tab against the design language, hunt for stray hex, stray radius,
@@ -97,7 +98,8 @@ src/tabs/Home/components/*        (any new Home components)
 4. Numbers stay in the `.mono` utility class (which now resolves to Poppins) — do not set `font-family` yourself.
 5. Empty state stays directional: "No reels logged yet — add your first above."
 
-**Do not touch:** `TabNav`, `tokens.css`, `ReelCard`, `App.jsx`, anything under `ReelInput/`, `AIChat/`, or `lib/`.
+**Do not touch:** `src/components/` (incl. `TabNav`), `tokens.css`, `ReelCard`, `App.jsx`, anything under
+`ReelInput/`, `AIChat/`, or `lib/`.
 
 ---
 
@@ -130,7 +132,8 @@ src/tabs/AIChat/components/IdeaCard.jsx
    visual weight without importing or duplicating it.
 6. Leave `onLogged`, `getPerformanceInsights`, `rankReel`, and `buildPrompt` call sites untouched.
 
-**Do not touch:** `tokens.css`, `ReelCard`, `TabNav`, `App.jsx`, anything under `Home/` or `lib/`.
+**Do not touch:** `tokens.css`, `ReelCard`, `src/components/` (incl. `TabNav`), `App.jsx`, anything under
+`Home/` or `lib/`.
 
 ---
 
