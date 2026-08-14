@@ -5,6 +5,14 @@
   box-sizing: border-box;
 }
 
+/* Design language rule: nothing in this app has rounded corners.
+   Enforced globally so no component can reintroduce a radius. */
+*,
+*::before,
+*::after {
+  border-radius: 0;
+}
+
 html,
 body,
 #root {
@@ -15,28 +23,47 @@ body {
   margin: 0;
 }
 
-/* Design tokens — light-blue monochromatic, techy.
+/* Design tokens — light-blue monochromatic with hard black shadows.
    These are the ONLY color values any component may reference. */
 :root {
   --bg: #f5f9ff;
   --surface: #e8f1fe;
+  --surface-alt: #ffffff;
+  --surface-deep: #d7e8fd;
   --primary: #4da3ff;
   --primary-deep: #1e6fd9;
   --ink: #0b2a4a;
   --muted: #6b8cae;
   --line: #cfe2fa;
+  --shadow-ink: #000000;
 
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  /* Poppins is the only typeface. --font-mono is kept as a token name so
+     existing `.mono` usages keep working — it resolves to Poppins too. */
+  --font-display: 'Poppins', sans-serif;
+  --font-mono: 'Poppins', sans-serif;
 
-  --radius-card: 16px;
-  --shadow-card: 0 4px 16px rgba(30, 111, 217, 0.1);
+  /* No rounded corners anywhere. */
+  --radius-card: 0;
+
+  /* Hard, unblurred, fully opaque drop shadow — the signature of the design. */
+  --shadow-hard: 4px 4px 0 var(--shadow-ink);
+  --shadow-hard-sm: 2px 2px 0 var(--shadow-ink);
+  --shadow-card: var(--shadow-hard);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
 }
 
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
@@ -59,16 +86,128 @@ textarea {
   color: inherit;
 }
 
-/* Shared card surface — every card in the app uses this class. */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  padding: 20px;
+img {
+  display: block;
+  max-width: 100%;
 }
 
-/* Utility for numbers, stats, captions, and other data display. */
+/* ---------------------------------------------------------------------------
+   Surfaces
+   Every card, box, and stat container in the app uses one of these.
+   Square corners, no border, hard black shadow.
+   --------------------------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: none;
+  box-shadow: var(--shadow-hard);
+  padding: var(--space-5);
+}
+
+/* A surface that sits inside another card — same look, lighter shadow. */
+.card-inset {
+  background: var(--surface-alt);
+  border: none;
+  box-shadow: var(--shadow-hard-sm);
+  padding: var(--space-4);
+}
+
+/* Same geometry as .card with no fill — for grouping without another box. */
+.card-flat {
+  background: var(--surface);
+  border: none;
+  padding: var(--space-5);
+}
+
+/* ---------------------------------------------------------------------------
+   Type
+   --------------------------------------------------------------------------- */
+
+/* Numbers, stats, and captions. Poppins with tabular figures so digits align. */
 .mono {
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Small caps-ish label above a value or field. */
+.label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The large number in a stat box. */
+.stat {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.caption {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Controls — inputs, selects, textareas, buttons
+   --------------------------------------------------------------------------- */
+
+.field {
+  width: 100%;
+  background: var(--surface-alt);
+  border: none;
+  box-shadow: var(--shadow-hard-sm);
+  padding: 10px var(--space-3);
+  font-size: 14px;
+  font-family: var(--font-display);
+  color: var(--ink);
+  outline: none;
+  appearance: none;
+}
+
+.field::placeholder {
+  color: var(--muted);
+}
+
+.field:focus {
+  box-shadow: var(--shadow-hard-sm), inset 0 0 0 2px var(--primary);
+}
+
+.btn {
+  display: inline-block;
+  background: var(--surface-alt);
+  color: var(--ink);
+  border: none;
+  box-shadow: var(--shadow-hard-sm);
+  padding: 10px var(--space-5);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary-deep);
+  color: var(--surface-alt);
+}
+
+/* Press effect: the box slides into its own shadow. */
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  background: var(--surface-deep);
+  color: var(--muted);
+  box-shadow: none;
 }

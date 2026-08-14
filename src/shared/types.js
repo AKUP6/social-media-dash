@@ -11,6 +11,8 @@
  *  @property {number} followsFromReel
  *  @property {string} niche             // e.g. "front ensemble", "broad"
  *  @property {string} datePosted        // ISO string
+ *  @property {string} [thumbnail]       // cover image URL; optional — ReelCard
+ *                                       // falls back to a placeholder block
  */
 
 /** @typedef {Object} Metrics

@@ -13,6 +13,7 @@ export const mockReels = [
     followsFromReel: 612,
     niche: 'front ensemble',
     datePosted: '2026-07-02T14:00:00.000Z',
+    thumbnail: '/thumbnails/r1.svg',
   },
   {
     id: 'r2',
@@ -24,6 +25,7 @@ export const mockReels = [
     followsFromReel: 284,
     niche: 'front ensemble',
     datePosted: '2026-07-10T14:00:00.000Z',
+    thumbnail: '/thumbnails/r2.svg',
   },
   {
     id: 'r3',
@@ -35,6 +37,7 @@ export const mockReels = [
     followsFromReel: 890,
     niche: 'broad',
     datePosted: '2026-07-14T14:00:00.000Z',
+    thumbnail: '/thumbnails/r3.svg',
   },
   {
     id: 'r4',
@@ -46,6 +49,7 @@ export const mockReels = [
     followsFromReel: 133,
     niche: 'broad',
     datePosted: '2026-07-18T14:00:00.000Z',
+    thumbnail: '/thumbnails/r4.svg',
   },
   {
     id: 'r5',
@@ -57,6 +61,7 @@ export const mockReels = [
     followsFromReel: 401,
     niche: 'front ensemble',
     datePosted: '2026-07-22T14:00:00.000Z',
+    thumbnail: '/thumbnails/r5.svg',
   },
   {
     id: 'r6',
@@ -68,6 +73,7 @@ export const mockReels = [
     followsFromReel: 156,
     niche: 'battery',
     datePosted: '2026-07-26T14:00:00.000Z',
+    thumbnail: '/thumbnails/r6.svg',
   },
   {
     id: 'r7',
@@ -79,6 +85,7 @@ export const mockReels = [
     followsFromReel: 1042,
     niche: 'broad',
     datePosted: '2026-08-01T14:00:00.000Z',
+    thumbnail: '/thumbnails/r7.svg',
   },
   {
     id: 'r8',
@@ -90,6 +97,7 @@ export const mockReels = [
     followsFromReel: 98,
     niche: 'front ensemble',
     datePosted: '2026-08-05T14:00:00.000Z',
+    thumbnail: '/thumbnails/r8.svg',
   },
 ]
 

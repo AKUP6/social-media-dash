@@ -19,7 +19,7 @@ export default function App() {
   return (
     <div style={{ minHeight: '100%' }}>
       <TabNav activeTab={activeTab} onChange={setActiveTab} />
-      <main style={{ padding: 24 }}>
+      <main style={{ maxWidth: 1080, margin: '0 auto', padding: 'var(--space-8) var(--space-6)' }}>
         <ActiveTabComponent reels={reels} metrics={metrics} addReel={addReel} />
       </main>
     </div>

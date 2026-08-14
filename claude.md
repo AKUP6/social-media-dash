@@ -1,161 +1,157 @@
-CLAUDE.md — Content Creation Dashboard
+# CLAUDE.md — Content Dashboard Redesign
 
-This file governs a 3-agent build. Read it fully before writing any code. If you are unsure whether a file is yours to touch, it is not — ask the Manager.
+Three Claudes work this build. **Claude 1 is the manager. Claude 2 and Claude 3 are the workers.**
+Read this whole file before writing code. If you are not sure a file is yours, it is not — ask Claude 1.
 
-0. The Product (shared understanding)
+## Mission
 
-A React content-creation dashboard for an Instagram reel creator. Three tabs:
+Redesign all three tabs to look intentional and human-made, not AI-generated. Every visual change lives in
+`tokens.css` and per-component styling. No logic, no contracts, no data-flow changes.
 
-Home — overall metrics as cards: views in the past month, follower increase, top 3 performing reels.
-Reel Input — a form to log a reel (hook, views, share rate, and standard IG stats), submit it, and have a ranking algorithm score it against overall / niche categories. The ranking output influences the AI prompt.
-AI Chat — dropdowns for reel type (educational / broad / niche) and goal (high view count / high follower count); outputs 3–5 well-formatted reel ideas.
-Design language (NON-NEGOTIABLE — every agent obeys)
-Color: light-blue monochromatic, techy. Use ONLY the tokens in src/shared/tokens.css. Never hardcode a hex value in a component. Palette:
---bg: #F5F9FF (near-white blue), --surface: #E8F1FE (card), --primary: #4DA3FF, --primary-deep: #1E6FD9, --ink: #0B2A4A (text), --muted: #6B8CAE, --line: #CFE2FA.
-Font: modern/techy. Display + UI: Space Grotesk. Data/numbers/captions: JetBrains Mono. Loaded once by the Manager in index.html + tokens.css. Do not import fonts anywhere else.
-Cards: --surface bg, 16px radius, 1px --line border, soft blue shadow. Define the .card class once in tokens.css; everyone reuses it.
-No emojis in UI. Sentence case labels. Buttons say what they do ("Log reel", "Generate ideas").
-1. Roles & Ownership (the anti-collision rule)
+## Global design language — applies to every tab
 
-The golden rule: you may only create/edit files inside YOUR owned paths. Touching another agent's path is a hard stop.
+- **Zero corner radius on everything.** No rounded corners anywhere — cards, buttons, inputs, selects, images.
+- **No borders.** Delete every `border` / `border-radius` rule on containers. Replace the border with a hard
+  black drop shadow: `4px 4px 0 #000` — no blur (or near-zero), fully opaque. Crisp and editorial, not soft.
+- **Poppins everywhere.** Replaces Space Grotesk and JetBrains Mono across the whole app, numbers included.
+- **All color comes from `tokens.css`.** Zero hardcoded hex in any component, including the new black shadow —
+  it ships as a token.
+- No emojis in UI. Sentence case labels. Buttons say what they do ("Log reel", "Generate ideas").
 
-🧠 MANAGER — Claude 1
+## Hard constraints — do not cross
 
-Owns the skeleton and the contracts. Runs FIRST and ALONE in Phase 1, then coordinates. Owns exclusively:
+- Do not edit anything in `src/lib/`.
+- Do not change `src/shared/types.js` or any data shape.
+- Do not touch `useReels`, `rankReel`, `buildPrompt`, `addReel`, `onLogged`, `getPerformanceInsights`, or any
+  state flow. This is styling and markup only.
+- Never edit a file owned by another Claude. If you need a change there, file a request (see "Cross-Claude requests").
 
+---
+
+## Claude 1 — Manager (me)
+
+**Owns exclusively:**
+
+```
 index.html
 src/main.jsx
-src/App.jsx                 (tab shell + routing/tab state ONLY)
-src/shared/                 (ALL of it)
-  tokens.css                (colors, fonts, .card, global reset)
-  types.js                  (JSDoc data shapes — the contracts)
-  mockData.js               (seed reels/metrics all agents read from)
-  TabNav.jsx                (the tab bar component)
-  useReels.js               (shared reel state hook, if needed)
+src/App.jsx
+src/shared/tokens.css
+src/shared/TabNav.jsx
+src/shared/ReelCard.jsx        (new — the shared reel card)
+src/shared/types.js
+src/shared/mockData.js
+src/shared/useReels.js
+CLAUDE.md
+```
 
-Responsibilities: scaffold the repo, define data shapes, wire the three tabs into App.jsx by importing each worker's entry component, resolve any integration issues, final review. The Manager NEVER writes the internals of a tab.
+**Tasks, in order:**
 
-🐝 WORKER BEE A — Claude 2
+1. Swap the font link in `index.html` to Poppins (weights 400/500/600/700). Remove the Space Grotesk and
+   JetBrains Mono links.
+2. Rewrite the token block in `tokens.css`:
+   - `--font-display` and `--font-mono` both point at Poppins so existing `.mono` usages don't break.
+   - `--radius-card: 0`.
+   - Replace `--shadow-card` with the hard black shadow, and add `--shadow-hard: 4px 4px 0 var(--shadow-ink)`
+     plus a `--shadow-ink: #000` color token.
+   - `.card`: drop the border, radius `0`, hard shadow.
+   - Add a `.surface` / `.field` utility set so workers restyle inputs and selects without inventing values.
+3. Build `src/shared/ReelCard.jsx` — the single reusable top-reel card. Props: `{ reel }`. Renders top to
+   bottom: reel title (the `hook`), view count, niche, then the reel image at the bottom.
+4. Resolve the image gap: `Reel` has no image field today. As the only Claude allowed to touch `types.js` and
+   `mockData.js`, add `thumbnail: string` to the `Reel` typedef and seed URLs (or a token-colored placeholder
+   block) in `mockData.js`, then tell Claude 2 the field name. Nobody else adds this field.
+5. Restyle `TabNav.jsx` as Google-style tabs — underline on the active tab, muted inactive labels, no pill
+   backgrounds, no radius.
+6. Commit tokens + `ReelCard` + `TabNav` **before** unblocking the workers.
+7. After both workers land: review every tab against the design language, hunt for stray hex, stray radius,
+   stray borders, leftover Space Grotesk / JetBrains Mono, and fix only inside manager-owned files. Anything
+   wrong inside a worker's file goes back to that worker.
 
-Owns the two data tabs. Owns exclusively:
+Claude 1 never writes the internals of a tab.
 
-src/tabs/Home/
-  Home.jsx                  (tab entry — Manager imports this)
-  components/
-    ViewsCard.jsx
-    FollowerCard.jsx
-    TopReelsCard.jsx
-    (any more Home components)
-src/tabs/ReelInput/
-  ReelInput.jsx             (tab entry — Manager imports this)
-  components/
-    ReelForm.jsx
-    StatField.jsx
-    RankResult.jsx
-    (any more input components)
-🐝 WORKER BEE B — Claude 3
+---
 
-Owns the AI tab and the algorithm that feeds it. Owns exclusively:
+## Claude 2 — Home tab
 
-src/tabs/AIChat/
-  AIChat.jsx                (tab entry — Manager imports this)
-  components/
-    TypeGoalControls.jsx    (the dropdowns)
-    IdeaList.jsx
-    IdeaCard.jsx
-src/lib/
-  ranking.js                (the ranking algorithm)
-  promptBuilder.js          (turns ranking + controls into the AI prompt)
+**Owns exclusively:**
 
-Bee B owns ranking.js even though Bee A's Reel Input tab calls it. Reason: the algorithm and the AI prompt are one logical unit. Bee A imports the function; Bee B defines it. See §3 for the contract.
+```
+src/tabs/Home/Home.jsx
+src/tabs/Home/components/ViewsCard.jsx
+src/tabs/Home/components/FollowerCard.jsx
+src/tabs/Home/components/TopReelsCard.jsx
+src/tabs/Home/components/*        (any new Home components)
+```
 
-2. Phased Execution Order (do NOT run all three at once)
+**Tasks:**
 
-Phase 1 — Manager solo. Manager builds index.html, main.jsx, App.jsx shell, and the entire src/shared/ folder including types.js, tokens.css, and mockData.js. Manager creates EMPTY placeholder entry files (Home.jsx, ReelInput.jsx, AIChat.jsx) that export a stub <div> so App.jsx compiles. Workers do nothing until Phase 1 is committed.
+1. `Home.jsx` — replace the current two-column CSS grid with a flex column layout.
+2. `ViewsCard.jsx` and `FollowerCard.jsx` — plain rectangles, zero radius, no border, hard black shadow,
+   **stacked vertically using flex**. Views on top, follower increase below. Label + number, nothing decorative.
+3. `TopReelsCard.jsx` — render the top three reels through the shared `ReelCard` from
+   `src/shared/ReelCard.jsx`, laid out with flex. Do not write your own card markup; do not edit `ReelCard`.
+4. Numbers stay in the `.mono` utility class (which now resolves to Poppins) — do not set `font-family` yourself.
+5. Empty state stays directional: "No reels logged yet — add your first above."
 
-Phase 2 — Workers in parallel. A and B build their owned trees against the frozen contracts from shared/. They never edit shared/. If a contract is wrong, they file a request to the Manager (see §4), they do not fix it themselves.
+**Do not touch:** `TabNav`, `tokens.css`, `ReelCard`, `App.jsx`, anything under `ReelInput/`, `AIChat/`, or `lib/`.
 
-Phase 3 — Manager integrates. Manager confirms all three entry components render inside App.jsx, checks the design tokens are applied everywhere, and does the final critique pass.
+---
 
-3. The Contracts (frozen — only Manager may change)
+## Claude 3 — Reel Input and AI Chat tabs
 
-These live in src/shared/types.js as JSDoc. Everyone codes to these exact shapes.
+**Owns exclusively:**
 
-js
-/** @typedef {Object} Reel
- *  @property {string} id
- *  @property {string} hook          // the opening line/hook text
- *  @property {number} views
- *  @property {number} shareRate      // 0..1
- *  @property {number} saveRate        // 0..1
- *  @property {number} likeRate         // 0..1
- *  @property {number} followsFromReel
- *  @property {string} niche           // e.g. "front ensemble", "broad"
- *  @property {string} datePosted       // ISO string
- */
+```
+src/tabs/ReelInput/ReelInput.jsx
+src/tabs/ReelInput/components/ReelForm.jsx
+src/tabs/ReelInput/components/StatField.jsx
+src/tabs/ReelInput/components/RankResult.jsx
+src/tabs/AIChat/AIChat.jsx
+src/tabs/AIChat/ideaGenerator.js        (styling-adjacent only — no logic changes)
+src/tabs/AIChat/components/TypeGoalControls.jsx
+src/tabs/AIChat/components/IdeaList.jsx
+src/tabs/AIChat/components/IdeaCard.jsx
+```
 
-/** @typedef {Object} Metrics
- *  @property {number} monthViews
- *  @property {number} followerIncrease
- *  @property {Reel[]} topReels         // length 3, pre-sorted desc
- */
+**Tasks:**
 
-/** Ranking contract — Bee B implements, Bee A calls.
- *  @typedef {Object} RankResult
- *  @property {number} overallRank      // 1 = best among all reels
- *  @property {number} nicheRank         // 1 = best within its niche
- *  @property {number} score              // 0..100 composite
- *  @property {string} tier                // "top" | "strong" | "average" | "weak"
- */
+1. Restyle every container in both tabs to the global language: zero radius, no borders, hard black shadow,
+   Poppins, colors from tokens only.
+2. `ReelForm` / `StatField` — inputs and selects get square corners, no border, the shared field styling from
+   `tokens.css`. Keep them controlled inputs; keep `onClick`/`onChange` handlers exactly as they are.
+3. `RankResult` — same card treatment as Home's stat boxes so the two tabs read as one system. Tier labels use
+   token colors, no new hex.
+4. `TypeGoalControls` — the two dropdowns match the restyled form fields.
+5. `IdeaList` / `IdeaCard` — 3–5 idea cards, square, hard-shadowed, flex layout, consistent with `ReelCard`'s
+   visual weight without importing or duplicating it.
+6. Leave `onLogged`, `getPerformanceInsights`, `rankReel`, and `buildPrompt` call sites untouched.
 
-// Bee B exports EXACTLY this signature from src/lib/ranking.js:
-// export function rankReel(newReel /* Reel */, allReels /* Reel[] */) => RankResult
+**Do not touch:** `tokens.css`, `ReelCard`, `TabNav`, `App.jsx`, anything under `Home/` or `lib/`.
 
-// Bee B exports EXACTLY this from src/lib/promptBuilder.js:
-// export function buildPrompt({ reelType, goal, rankContext }) => string
+---
 
-Shared state: the current list of reels lives in useReels.js (Manager). Bee A's form calls addReel(reel) from that hook; Home reads reels and metrics from it. Bee B's algorithm receives reels as a plain argument — it does not import the hook.
+## Sequence
 
-4. Cross-agent requests (how to not step on each other)
-You need a new field on Reel? → Do NOT add it. Write a one-line request: REQUEST(Manager): add "audioTrack: string" to Reel typedef. Manager updates types.js, then you proceed.
-You need a function another agent owns? → Import it by its contracted signature (§3). If it doesn't exist yet, code against the signature and stub locally is FORBIDDEN — instead the Manager sequences you after that function lands.
-Two agents think they need the same file? → It belongs to whoever §1 assigns. If §1 is silent, Manager decides and records it here.
-Never edit shared/, App.jsx, or another agent's tabs/ or lib/ folder. No exceptions.
-5. Component & code rules (all agents)
-Every tab folder has a single entry file (TabName.jsx) that the Manager imports; all sub-pieces live in that tab's components/. Keep components small and single-purpose.
-One component per file. Named for what it shows (ViewsCard, not Card2).
-Functional components + hooks only. Default export the component.
-Pull all color/spacing/font from tokens.css classes or CSS vars. Zero inline hex.
-Numbers and stats render in JetBrains Mono (use the .mono utility from tokens).
-No <form> submit-reload behavior — use onClick/onChange handlers and controlled inputs.
-Keep copy plain and active. Empty states give direction ("No reels logged yet — add your first above").
-6. Final file structure (target)
-index.html
-src/
-  main.jsx
-  App.jsx
-  shared/
-    tokens.css
-    types.js
-    mockData.js
-    TabNav.jsx
-    useReels.js
-  tabs/
-    Home/
-      Home.jsx
-      components/{ViewsCard,FollowerCard,TopReelsCard}.jsx
-    ReelInput/
-      ReelInput.jsx
-      components/{ReelForm,StatField,RankResult}.jsx
-    AIChat/
-      AIChat.jsx
-      components/{TypeGoalControls,IdeaList,IdeaCard}.jsx
-  lib/
-    ranking.js
-    promptBuilder.js
-7. Definition of done
-All three tabs render and switch cleanly from TabNav.
-Home shows the three metric cards from mockData/useReels.
-Reel Input submits a reel, calls rankReel, shows RankResult.
-AI Chat dropdowns drive buildPrompt and render 3–5 idea cards.
-Light-blue monochrome + Space Grotesk/JetBrains Mono applied everywhere via tokens. No stray hex.
+1. **Claude 1 solo.** Poppins in `index.html`, tokens rewritten, `ReelCard` built, `TabNav` restyled,
+   `thumbnail` added to the contract. Committed.
+2. **Claude 2 and Claude 3 in parallel**, against frozen tokens. They never edit shared files.
+3. **Claude 1 reviews last** and integrates.
+
+## Cross-Claude requests
+
+- Need a new token, a shadow variant, or a change to `ReelCard`? Write one line —
+  `REQUEST(Claude 1): add --shadow-hard-sm token` — and wait. Do not add it locally.
+- Need a new field on `Reel`? Same thing. Claude 1 edits `types.js` and `mockData.js`; nobody else does.
+- Two Claudes think they own the same file? Ownership above wins. If this file is silent, Claude 1 decides and
+  records it here.
+
+## Definition of done
+
+- All three tabs render and switch cleanly from the Google-style `TabNav`.
+- Zero rounded corners, zero container borders, hard black `4px 4px 0` shadows throughout.
+- Poppins is the only font family in the app; no Space Grotesk or JetBrains Mono references remain.
+- Home stacks views and follower increase vertically with flex, and renders top reels through the shared
+  `ReelCard` (title → views → niche → image).
+- Reel Input and AI Chat match Home visually, with every handler and data flow unchanged.
+- No hardcoded hex in any component — every color resolves through `tokens.css`.
