@@ -11,14 +11,13 @@ Redesign all three tabs to look intentional and human-made, not AI-generated. Ev
 ## Global design language — applies to every tab
 
 - **Zero corner radius on everything.** No rounded corners anywhere — cards, buttons, inputs, selects, images.
-- **No borders. Blue glow instead of shadows.** Delete every `border` / `border-radius` rule on containers.
-  Replace the border with a soft blue glow from the tokens — `var(--glow-sm)`, `var(--glow)`, or
-  `var(--glow-strong)`. Never a black or fully opaque drop shadow. The glow is built from `--primary-rgb`,
-  so it stays inside the light-blue palette; each token pairs a 1px ring with a wider bloom so square edges
-  still read against the near-white background.
+- **No borders, no rings. Soft black glow instead of shadows.** Delete every `border` / `border-radius` rule
+  on containers, and never add a `0 0 0 1px` ring to fake one. The only edge treatment is a glow from the
+  tokens — `var(--glow-sm)`, `var(--glow)`, or `var(--glow-strong)`. They are symmetric black blooms at low
+  opacity, built from `--glow-rgb`: never fully opaque, never offset like a hard drop shadow.
 - **Poppins everywhere.** Replaces Space Grotesk and JetBrains Mono across the whole app, numbers included.
 - **All color comes from `tokens.css`.** Zero hardcoded hex or rgba in any component — the glow ships as a
-  token, and `--primary-rgb` exists so nobody needs to restate a color to change an opacity.
+  token, and `--glow-rgb` / `--primary-rgb` exist so nobody needs to restate a color to change an opacity.
 - No emojis in UI. Sentence case labels. Buttons say what they do ("Log reel", "Generate ideas").
 
 ## Hard constraints — do not cross
@@ -55,8 +54,8 @@ CLAUDE.md
 2. Rewrite the token block in `tokens.css`:
    - `--font-display` and `--font-mono` both point at Poppins so existing `.mono` usages don't break.
    - `--radius-card: 0`.
-   - Add `--primary-rgb` / `--primary-deep-rgb` channel tokens, then `--glow-sm`, `--glow`, and
-     `--glow-strong` built from them. `--shadow-card` stays as an alias of `--glow`.
+   - Add `--glow-rgb` / `--primary-rgb` / `--primary-deep-rgb` channel tokens, then `--glow-sm`, `--glow`,
+     and `--glow-strong` built from `--glow-rgb`. `--shadow-card` stays as an alias of `--glow`.
    - `.card`: drop the border, radius `0`, glow.
    - Add a `.surface` / `.field` utility set so workers restyle inputs and selects without inventing values.
 3. Build `src/shared/ReelCard.jsx` — the single reusable top-reel card. Props: `{ reel }`. Renders top to
@@ -119,7 +118,7 @@ src/tabs/AIChat/components/IdeaCard.jsx
 
 **Tasks:**
 
-1. Restyle every container in both tabs to the global language: zero radius, no borders, blue glow,
+1. Restyle every container in both tabs to the global language: zero radius, no borders, soft black glow,
    Poppins, colors from tokens only.
 2. `ReelForm` / `StatField` — inputs and selects get square corners, no border, the shared field styling from
    `tokens.css`. Keep them controlled inputs; keep `onClick`/`onChange` handlers exactly as they are.
@@ -152,7 +151,8 @@ src/tabs/AIChat/components/IdeaCard.jsx
 ## Definition of done
 
 - All three tabs render and switch cleanly from the Google-style `TabNav`.
-- Zero rounded corners, zero container borders, blue glows throughout — no black or opaque drop shadows.
+- Zero rounded corners, zero container borders or 1px rings, soft black glows throughout — never a fully
+  opaque or offset drop shadow.
 - Poppins is the only font family in the app; no Space Grotesk or JetBrains Mono references remain.
 - Home stacks views and follower increase vertically with flex, and renders top reels through the shared
   `ReelCard` (title → views → niche → image).
