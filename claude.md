@@ -11,11 +11,14 @@ Redesign all three tabs to look intentional and human-made, not AI-generated. Ev
 ## Global design language — applies to every tab
 
 - **Zero corner radius on everything.** No rounded corners anywhere — cards, buttons, inputs, selects, images.
-- **No borders.** Delete every `border` / `border-radius` rule on containers. Replace the border with a hard
-  black drop shadow: `4px 4px 0 #000` — no blur (or near-zero), fully opaque. Crisp and editorial, not soft.
+- **No borders. Blue glow instead of shadows.** Delete every `border` / `border-radius` rule on containers.
+  Replace the border with a soft blue glow from the tokens — `var(--glow-sm)`, `var(--glow)`, or
+  `var(--glow-strong)`. Never a black or fully opaque drop shadow. The glow is built from `--primary-rgb`,
+  so it stays inside the light-blue palette; each token pairs a 1px ring with a wider bloom so square edges
+  still read against the near-white background.
 - **Poppins everywhere.** Replaces Space Grotesk and JetBrains Mono across the whole app, numbers included.
-- **All color comes from `tokens.css`.** Zero hardcoded hex in any component, including the new black shadow —
-  it ships as a token.
+- **All color comes from `tokens.css`.** Zero hardcoded hex or rgba in any component — the glow ships as a
+  token, and `--primary-rgb` exists so nobody needs to restate a color to change an opacity.
 - No emojis in UI. Sentence case labels. Buttons say what they do ("Log reel", "Generate ideas").
 
 ## Hard constraints — do not cross
@@ -52,9 +55,9 @@ CLAUDE.md
 2. Rewrite the token block in `tokens.css`:
    - `--font-display` and `--font-mono` both point at Poppins so existing `.mono` usages don't break.
    - `--radius-card: 0`.
-   - Replace `--shadow-card` with the hard black shadow, and add `--shadow-hard: 4px 4px 0 var(--shadow-ink)`
-     plus a `--shadow-ink: #000` color token.
-   - `.card`: drop the border, radius `0`, hard shadow.
+   - Add `--primary-rgb` / `--primary-deep-rgb` channel tokens, then `--glow-sm`, `--glow`, and
+     `--glow-strong` built from them. `--shadow-card` stays as an alias of `--glow`.
+   - `.card`: drop the border, radius `0`, glow.
    - Add a `.surface` / `.field` utility set so workers restyle inputs and selects without inventing values.
 3. Build `src/shared/ReelCard.jsx` — the single reusable top-reel card. Props: `{ reel }`. Renders top to
    bottom: reel title (the `hook`), view count, niche, then the reel image at the bottom.
@@ -87,7 +90,7 @@ src/tabs/Home/components/*        (any new Home components)
 **Tasks:**
 
 1. `Home.jsx` — replace the current two-column CSS grid with a flex column layout.
-2. `ViewsCard.jsx` and `FollowerCard.jsx` — plain rectangles, zero radius, no border, hard black shadow,
+2. `ViewsCard.jsx` and `FollowerCard.jsx` — plain rectangles, zero radius, no border, `var(--glow)`,
    **stacked vertically using flex**. Views on top, follower increase below. Label + number, nothing decorative.
 3. `TopReelsCard.jsx` — render the top three reels through the shared `ReelCard` from
    `src/shared/ReelCard.jsx`, laid out with flex. Do not write your own card markup; do not edit `ReelCard`.
@@ -116,7 +119,7 @@ src/tabs/AIChat/components/IdeaCard.jsx
 
 **Tasks:**
 
-1. Restyle every container in both tabs to the global language: zero radius, no borders, hard black shadow,
+1. Restyle every container in both tabs to the global language: zero radius, no borders, blue glow,
    Poppins, colors from tokens only.
 2. `ReelForm` / `StatField` — inputs and selects get square corners, no border, the shared field styling from
    `tokens.css`. Keep them controlled inputs; keep `onClick`/`onChange` handlers exactly as they are.
@@ -141,7 +144,7 @@ src/tabs/AIChat/components/IdeaCard.jsx
 ## Cross-Claude requests
 
 - Need a new token, a shadow variant, or a change to `ReelCard`? Write one line —
-  `REQUEST(Claude 1): add --shadow-hard-sm token` — and wait. Do not add it locally.
+  `REQUEST(Claude 1): add --glow-inset token` — and wait. Do not add it locally.
 - Need a new field on `Reel`? Same thing. Claude 1 edits `types.js` and `mockData.js`; nobody else does.
 - Two Claudes think they own the same file? Ownership above wins. If this file is silent, Claude 1 decides and
   records it here.
@@ -149,7 +152,7 @@ src/tabs/AIChat/components/IdeaCard.jsx
 ## Definition of done
 
 - All three tabs render and switch cleanly from the Google-style `TabNav`.
-- Zero rounded corners, zero container borders, hard black `4px 4px 0` shadows throughout.
+- Zero rounded corners, zero container borders, blue glows throughout — no black or opaque drop shadows.
 - Poppins is the only font family in the app; no Space Grotesk or JetBrains Mono references remain.
 - Home stacks views and follower increase vertically with flex, and renders top reels through the shared
   `ReelCard` (title → views → niche → image).

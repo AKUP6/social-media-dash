@@ -35,7 +35,11 @@ body {
   --ink: #0b2a4a;
   --muted: #6b8cae;
   --line: #cfe2fa;
-  --shadow-ink: #000000;
+
+  /* Channel values so glows can be built at any opacity without
+     redeclaring a hex anywhere. */
+  --primary-rgb: 77, 163, 255;
+  --primary-deep-rgb: 30, 111, 217;
 
   /* Poppins is the only typeface. --font-mono is kept as a token name so
      existing `.mono` usages keep working — it resolves to Poppins too. */
@@ -45,10 +49,15 @@ body {
   /* No rounded corners anywhere. */
   --radius-card: 0;
 
-  /* Hard, unblurred, fully opaque drop shadow — the signature of the design. */
-  --shadow-hard: 4px 4px 0 var(--shadow-ink);
-  --shadow-hard-sm: 2px 2px 0 var(--shadow-ink);
-  --shadow-card: var(--shadow-hard);
+  /* Blue glow — the signature of the design. Soft, luminous, never black.
+     Each glow pairs a tight ring with a wider bloom so a square edge still
+     reads on the near-white background without using a border. */
+  --glow-sm: 0 0 0 1px rgba(var(--primary-rgb), 0.28), 0 2px 10px rgba(var(--primary-rgb), 0.3);
+  --glow: 0 0 0 1px rgba(var(--primary-rgb), 0.32), 0 4px 22px rgba(var(--primary-rgb), 0.38);
+  --glow-strong: 0 0 0 1px rgba(var(--primary-rgb), 0.5), 0 6px 32px rgba(var(--primary-rgb), 0.55);
+
+  /* Legacy alias — components may still say --shadow-card. */
+  --shadow-card: var(--glow);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -94,21 +103,21 @@ img {
 /* ---------------------------------------------------------------------------
    Surfaces
    Every card, box, and stat container in the app uses one of these.
-   Square corners, no border, hard black shadow.
+   Square corners, no border, blue glow.
    --------------------------------------------------------------------------- */
 
 .card {
   background: var(--surface);
   border: none;
-  box-shadow: var(--shadow-hard);
+  box-shadow: var(--glow);
   padding: var(--space-5);
 }
 
-/* A surface that sits inside another card — same look, lighter shadow. */
+/* A surface that sits inside another card — same look, tighter glow. */
 .card-inset {
   background: var(--surface-alt);
   border: none;
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--glow-sm);
   padding: var(--space-4);
 }
 
@@ -164,13 +173,14 @@ img {
   width: 100%;
   background: var(--surface-alt);
   border: none;
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--glow-sm);
   padding: 10px var(--space-3);
   font-size: 14px;
   font-family: var(--font-display);
   color: var(--ink);
   outline: none;
   appearance: none;
+  transition: box-shadow 120ms ease;
 }
 
 .field::placeholder {
@@ -178,7 +188,7 @@ img {
 }
 
 .field:focus {
-  box-shadow: var(--shadow-hard-sm), inset 0 0 0 2px var(--primary);
+  box-shadow: var(--glow-strong);
 }
 
 .btn {
@@ -186,12 +196,13 @@ img {
   background: var(--surface-alt);
   color: var(--ink);
   border: none;
-  box-shadow: var(--shadow-hard-sm);
+  box-shadow: var(--glow-sm);
   padding: 10px var(--space-5);
   font-family: var(--font-display);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  transition: box-shadow 120ms ease;
 }
 
 .btn-primary {
@@ -199,10 +210,13 @@ img {
   color: var(--surface-alt);
 }
 
-/* Press effect: the box slides into its own shadow. */
-.btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: none;
+/* Hover lights the glow up; press pulls it back in. */
+.btn:hover:not(:disabled) {
+  box-shadow: var(--glow-strong);
+}
+
+.btn:active:not(:disabled) {
+  box-shadow: 0 0 0 1px rgba(var(--primary-deep-rgb), 0.45);
 }
 
 .btn:disabled {

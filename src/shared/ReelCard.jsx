@@ -2,7 +2,7 @@
  * Shared reel card. Owned by the Manager — workers import it, never edit it.
  *
  * Reads top to bottom: title, view count, niche, cover image.
- * Square corners, no border, hard black shadow — see tokens.css.
+ * Square corners, no border, blue glow — see tokens.css.
  *
  * @param {{ reel: import('./types.js').Reel }} props
  */
@@ -68,7 +68,7 @@ export default function ReelCard({ reel }) {
             aspectRatio: '9 / 16',
             objectFit: 'cover',
             marginTop: 'auto',
-            boxShadow: 'var(--shadow-hard-sm)',
+            boxShadow: 'var(--glow-sm)',
           }}
         />
       ) : (
@@ -79,7 +79,7 @@ export default function ReelCard({ reel }) {
             aspectRatio: '9 / 16',
             marginTop: 'auto',
             background: 'var(--surface-deep)',
-            boxShadow: 'var(--shadow-hard-sm)',
+            boxShadow: 'var(--glow-sm)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
