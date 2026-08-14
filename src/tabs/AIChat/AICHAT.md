@@ -39,6 +39,10 @@ AIChat.jsx            Claude 1   shell, state, handlers  ← frozen when you sta
   Composer.jsx        Claude 3
 ```
 
+`MessageThread.jsx` and `Composer.jsx` already exist as throwaway stubs so the shell compiles and the tab
+runs today. They are not a starting point — delete the contents and write the real component. The stub's
+only binding part is its prop signature.
+
 **Claude 2 owns exclusively**
 
 ```
@@ -118,8 +122,9 @@ needs a lib change, which is a `REQUEST(Claude 1)`.
 
 ## Claude 2 — the thread
 
-1. `MessageThread.jsx` — flex column, `gap: var(--space-5)`, messages oldest to newest. The container
-   scrolls; the composer below it does not move.
+1. `MessageThread.jsx` — flex column, `gap: var(--space-5)`, messages oldest to newest. The thread grows
+   down the page; do not set a height, `overflow`, or scroll behaviour. The shell keeps the composer parked
+   at the bottom of the viewport with `position: sticky`, so the page scroll is the chat scroll.
 2. `MessageBubble.jsx` — one turn.
    - **User turn:** `alignSelf: flex-end`, max width around 70%, filled with `var(--primary-deep)`, text in
      `var(--surface-alt)`. Below the text, echo `params` as small quiet chips ("Educational · Views") so you
