@@ -1,0 +1,103 @@
+// Seed data — all agents read from here (via useReels.js for reel state).
+// Shapes match src/shared/types.js.
+
+/** @type {import('./types.js').Reel[]} */
+export const mockReels = [
+  {
+    id: 'r1',
+    hook: "Nobody's teaching you this front ensemble warmup",
+    views: 182400,
+    shareRate: 0.041,
+    saveRate: 0.062,
+    likeRate: 0.088,
+    followsFromReel: 612,
+    niche: 'front ensemble',
+    datePosted: '2026-07-02T14:00:00.000Z',
+  },
+  {
+    id: 'r2',
+    hook: '3 mallet grips that instantly fix your technique',
+    views: 96500,
+    shareRate: 0.028,
+    saveRate: 0.051,
+    likeRate: 0.071,
+    followsFromReel: 284,
+    niche: 'front ensemble',
+    datePosted: '2026-07-10T14:00:00.000Z',
+  },
+  {
+    id: 'r3',
+    hook: 'POV: your section leader finally respects you',
+    views: 254100,
+    shareRate: 0.065,
+    saveRate: 0.033,
+    likeRate: 0.112,
+    followsFromReel: 890,
+    niche: 'broad',
+    datePosted: '2026-07-14T14:00:00.000Z',
+  },
+  {
+    id: 'r4',
+    hook: 'The drill write everyone is copying this season',
+    views: 61200,
+    shareRate: 0.019,
+    saveRate: 0.024,
+    likeRate: 0.054,
+    followsFromReel: 133,
+    niche: 'broad',
+    datePosted: '2026-07-18T14:00:00.000Z',
+  },
+  {
+    id: 'r5',
+    hook: 'Marimba four-mallet independence in 30 seconds',
+    views: 145300,
+    shareRate: 0.037,
+    saveRate: 0.058,
+    likeRate: 0.079,
+    followsFromReel: 401,
+    niche: 'front ensemble',
+    datePosted: '2026-07-22T14:00:00.000Z',
+  },
+  {
+    id: 'r6',
+    hook: "Why your battery isn't locking in (and how to fix it)",
+    views: 78900,
+    shareRate: 0.022,
+    saveRate: 0.03,
+    likeRate: 0.061,
+    followsFromReel: 156,
+    niche: 'battery',
+    datePosted: '2026-07-26T14:00:00.000Z',
+  },
+  {
+    id: 'r7',
+    hook: 'This is what 10,000 reps of a lift looks like',
+    views: 312800,
+    shareRate: 0.071,
+    saveRate: 0.029,
+    likeRate: 0.129,
+    followsFromReel: 1042,
+    niche: 'broad',
+    datePosted: '2026-08-01T14:00:00.000Z',
+  },
+  {
+    id: 'r8',
+    hook: 'Rank the front ensemble setups: which is yours?',
+    views: 53400,
+    shareRate: 0.016,
+    saveRate: 0.021,
+    likeRate: 0.048,
+    followsFromReel: 98,
+    niche: 'front ensemble',
+    datePosted: '2026-08-05T14:00:00.000Z',
+  },
+]
+
+const topReels = [...mockReels].sort((a, b) => b.views - a.views).slice(0, 3)
+
+/** @type {import('./types.js').Metrics} */
+export const mockMetrics = {
+  monthViews: mockReels.reduce((sum, reel) => sum + reel.views, 0),
+  followerIncrease: mockReels.reduce((sum, reel) => sum + reel.followsFromReel, 0),
+  topReels,
+}

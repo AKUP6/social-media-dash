@@ -1,0 +1,74 @@
+/* Global reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+/* Design tokens — light-blue monochromatic, techy.
+   These are the ONLY color values any component may reference. */
+:root {
+  --bg: #f5f9ff;
+  --surface: #e8f1fe;
+  --primary: #4da3ff;
+  --primary-deep: #1e6fd9;
+  --ink: #0b2a4a;
+  --muted: #6b8cae;
+  --line: #cfe2fa;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-card: 16px;
+  --shadow-card: 0 4px 16px rgba(30, 111, 217, 0.1);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-display);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* Shared card surface — every card in the app uses this class. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 20px;
+}
+
+/* Utility for numbers, stats, captions, and other data display. */
+.mono {
+  font-family: var(--font-mono);
+}
