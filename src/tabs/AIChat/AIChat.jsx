@@ -57,12 +57,31 @@ export default function AIChat({ reels }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)', maxWidth: 720 }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-5)',
+        width: '100%',
+        maxWidth: 760,
+        margin: '0 auto',
+      }}
+    >
       <MessageThread messages={messages} />
 
       {/* Sticky rather than fixed: the thread grows with the page, and the
-          composer stays parked at the bottom of the viewport like a chat app. */}
-      <div style={{ position: 'sticky', bottom: 'var(--space-6)' }}>
+          composer stays parked at the bottom of the viewport like a chat app.
+          The wrapper is filled with the page colour and padded so the thread
+          scrolls cleanly underneath instead of showing through the composer. */}
+      <div
+        style={{
+          position: 'sticky',
+          bottom: 0,
+          marginTop: 'auto',
+          padding: 'var(--space-4) 0 var(--space-6)',
+          background: 'var(--bg)',
+        }}
+      >
         <Composer
           value={draft}
           onChange={setDraft}
