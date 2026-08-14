@@ -11,10 +11,11 @@ Redesign all three tabs to look intentional and human-made, not AI-generated. Ev
 ## Global design language — applies to every tab
 
 - **Zero corner radius on everything.** No rounded corners anywhere — cards, buttons, inputs, selects, images.
-- **No borders, no rings. Soft black glow instead of shadows.** Delete every `border` / `border-radius` rule
+- **No borders, no rings. Soft blue glow instead of shadows.** Delete every `border` / `border-radius` rule
   on containers, and never add a `0 0 0 1px` ring to fake one. The only edge treatment is a glow from the
-  tokens — `var(--glow-sm)`, `var(--glow)`, or `var(--glow-strong)`. They are symmetric black blooms at low
-  opacity, built from `--glow-rgb`: never fully opaque, never offset like a hard drop shadow.
+  tokens — `var(--glow-sm)`, `var(--glow)`, or `var(--glow-strong)`. They are small, symmetric deep-blue
+  blooms built from `--glow-rgb`: never black, never fully opaque, never offset like a hard drop shadow.
+  Do not invent a wider or softer glow; use the three tokens as they are.
 - **Poppins everywhere.** Replaces Space Grotesk and JetBrains Mono across the whole app, numbers included.
 - **All color comes from `tokens.css`.** Zero hardcoded hex or rgba in any component — the glow ships as a
   token, and `--glow-rgb` / `--primary-rgb` exist so nobody needs to restate a color to change an opacity.
@@ -118,7 +119,7 @@ src/tabs/AIChat/components/IdeaCard.jsx
 
 **Tasks:**
 
-1. Restyle every container in both tabs to the global language: zero radius, no borders, soft black glow,
+1. Restyle every container in both tabs to the global language: zero radius, no borders, deep-blue glow,
    Poppins, colors from tokens only.
 2. `ReelForm` / `StatField` — inputs and selects get square corners, no border, the shared field styling from
    `tokens.css`. Keep them controlled inputs; keep `onClick`/`onChange` handlers exactly as they are.
@@ -151,8 +152,8 @@ src/tabs/AIChat/components/IdeaCard.jsx
 ## Definition of done
 
 - All three tabs render and switch cleanly from the Google-style `TabNav`.
-- Zero rounded corners, zero container borders or 1px rings, soft black glows throughout — never a fully
-  opaque or offset drop shadow.
+- Zero rounded corners, zero container borders or 1px rings, tight deep-blue glows throughout — never black,
+  never a fully opaque or offset drop shadow.
 - Poppins is the only font family in the app; no Space Grotesk or JetBrains Mono references remain.
 - Home stacks views and follower increase vertically with flex, and renders top reels through the shared
   `ReelCard` (title → views → niche → image).

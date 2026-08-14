@@ -2,7 +2,7 @@
  * Shared reel card. Owned by the Manager — workers import it, never edit it.
  *
  * Reads top to bottom: title, view count, niche, cover image.
- * Square corners, no border, soft black glow — see tokens.css.
+ * Square corners, no border, soft blue glow — see tokens.css.
  *
  * @param {{ reel: import('./types.js').Reel }} props
  */

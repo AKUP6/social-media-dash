@@ -23,7 +23,7 @@ body {
   margin: 0;
 }
 
-/* Design tokens — light-blue monochromatic with soft black glows.
+/* Design tokens — light-blue monochromatic with soft blue glows.
    These are the ONLY color values any component may reference. */
 :root {
   --bg: #f5f9ff;
@@ -38,9 +38,11 @@ body {
 
   /* Channel values so glows and tints can be built at any opacity without
      redeclaring a hex anywhere. */
-  --glow-rgb: 0, 0, 0;
   --primary-rgb: 77, 163, 255;
   --primary-deep-rgb: 30, 111, 217;
+
+  /* Single switch point for the glow colour — every glow token reads this. */
+  --glow-rgb: var(--primary-deep-rgb);
 
   /* Poppins is the only typeface. --font-mono is kept as a token name so
      existing `.mono` usages keep working — it resolves to Poppins too. */
@@ -50,11 +52,13 @@ body {
   /* No rounded corners anywhere. */
   --radius-card: 0;
 
-  /* Black glow — the signature of the design. A soft, symmetric bloom with
-     no ring and no border, so containers have no visible edge at all. */
-  --glow-sm: 0 0 12px rgba(var(--glow-rgb), 0.18);
-  --glow: 0 0 24px rgba(var(--glow-rgb), 0.24);
-  --glow-strong: 0 0 36px rgba(var(--glow-rgb), 0.38);
+  /* Deep-blue glow — the signature of the design. A tight, symmetric bloom
+     with no ring and no border, so containers have no visible edge at all.
+     Kept small on purpose: a short radius in the deeper blue defines the
+     square edge without hazing out into the background. */
+  --glow-sm: 0 0 5px rgba(var(--glow-rgb), 0.3);
+  --glow: 0 0 9px rgba(var(--glow-rgb), 0.38);
+  --glow-strong: 0 0 15px rgba(var(--glow-rgb), 0.55);
 
   /* Legacy alias — components may still say --shadow-card. */
   --shadow-card: var(--glow);
@@ -103,7 +107,7 @@ img {
 /* ---------------------------------------------------------------------------
    Surfaces
    Every card, box, and stat container in the app uses one of these.
-   Square corners, no border, soft black glow.
+   Square corners, no border, soft blue glow.
    --------------------------------------------------------------------------- */
 
 .card {
@@ -216,7 +220,7 @@ img {
 }
 
 .btn:active:not(:disabled) {
-  box-shadow: 0 0 6px rgba(var(--glow-rgb), 0.28);
+  box-shadow: 0 0 6px rgba(var(--primary-deep-rgb), 0.45);
 }
 
 .btn:disabled {
