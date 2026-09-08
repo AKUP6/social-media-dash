@@ -1,18 +1,51 @@
 # CLAUDE.md — Content Dashboard
 
-Claude 1 is the manager. Claude 2 and Claude 3 are the workers. If you are not sure a file is yours, it is
-not — ask Claude 1.
+## Overview
 
-Current phase: **housekeeping pass over the three tabs.** Styling and markup only. No logic, no contracts,
-no data-flow changes.
+A React + Vite single-page dashboard for content creators. It tracks reel performance, logs new reels with
+manual stats, ranks them, and generates content ideas with AI assistance. Three tabs, switched by a folder-style
+nav bar:
+
+- **Home** — views/follower summary and top-performing reels.
+- **Reel input** — log a new reel's stats and see it ranked against past performance.
+- **AI chat** — a chat-style interface that generates reel ideas from a reel type + goal, using past
+  performance as context.
+
+## Tech stack
+
+React 18 on Vite. No CSS framework and no CSS-in-JS library — components use inline `style` objects plus a
+small set of utility classes (`.card`, `.card-inset`, `.field`, `.btn`) defined in `src/shared/tokens.css`.
+No test runner is configured; `npm run build` (vite build) is the correctness check.
+
+## Project structure
+
+```
+src/
+  main.jsx, App.jsx            bootstrap and tab switcher
+  components/TabNav.jsx        folder-tab navigation bar
+  shared/
+    tokens.css                 design tokens + utility classes (color, spacing, .card/.field/.btn)
+    types.js                   shared type definitions (Reel, ChatMessage, Idea, ...)
+    mockData.js                seed data
+    useReels.js                reel state hook
+    ReelCard.jsx                shared reel display component, used by Home and AI chat
+  lib/
+    ranking.js                  rankReel, getPerformanceInsights
+    promptBuilder.js             buildPrompt, REEL_TYPES, GOALS
+  tabs/
+    Home/                        performance overview tab
+    ReelInput/                   reel logging + ranking tab
+    AIChat/                      AI-assisted idea generation tab — see AICHAT.md for its internal
+                                  component breakdown (thread vs. composer)
+```
 
 ## Design language — applies everywhere
 
-- **Zero corner radius.** Nothing is rounded: cards, buttons, inputs, selects, images, chips.
+- **Zero corner radius.** as a default unless otherwise directed
 - **No borders, no rings.** Never a `border` on a container, never a `0 0 0 1px` ring faking one. The only
   edge treatment is a glow token: `var(--glow-sm)`, `var(--glow)`, `var(--glow-strong)`. They are tight,
   symmetric deep-blue blooms — never black, never opaque, never offset. Do not invent new ones.
-- **Poppins only.** No Space Grotesk, no JetBrains Mono. Numbers use the `.mono` class, which is Poppins with
+- **Nunito only.** No Space Grotesk, no JetBrains Mono. Numbers use the `.mono` class, which is Nunito with
   tabular figures — do not set `font-family` yourself.
 - **Color comes from `tokens.css`.** Zero hex or rgba in any component. `--glow-rgb` / `--primary-rgb` /
   `--primary-deep-rgb` exist so you never restate a color to change its opacity.
@@ -21,83 +54,8 @@ no data-flow changes.
 ## Hard constraints
 
 - Do not edit `src/lib/` or `src/shared/types.js`.
-- Do not touch `useReels`, `rankReel`, `buildPrompt`, `addReel`, `onLogged`, or `getPerformanceInsights`.
-  Keep every handler and prop exactly as it is.
-- Never edit a file owned by another Claude.
-
-## Ownership
-
-**Claude 1 — manager**
-
-```
-index.html                 src/shared/tokens.css
-src/main.jsx               src/shared/ReelCard.jsx
-src/App.jsx                src/shared/types.js
-src/components/  (all)     src/shared/mockData.js
-  TabNav.jsx               src/shared/useReels.js
-CLAUDE.md
-```
-
-**Claude 2 — Home tab**
-
-```
-src/tabs/Home/Home.jsx
-src/tabs/Home/components/*      (ViewsCard, FollowerCard, TopReelsCard, any new ones)
-```
-
-**Claude 3 — Reel Input tab**
-
-```
-src/tabs/ReelInput/ReelInput.jsx
-src/tabs/ReelInput/components/*   (ReelForm, StatField, RankResult)
-```
-
-**AI chat tab — split between Claude 2 and Claude 3**
-
-Ownership inside that tab is per-component, not per-tab. It is spelled out in
-`src/tabs/AIChat/AICHAT.md`; read that file before touching anything under `src/tabs/AIChat/`.
-`AIChat.jsx` and `ideaGenerator.js` belong to Claude 1.
-
-## Done already (Claude 1)
-
-Poppins wired in `index.html`; `tokens.css` rewritten with the glow tokens and the `.card` / `.card-inset` /
-`.field` / `.btn` utilities; `thumbnail` added to `Reel` and seeded in `mockData.js`; `ReelCard` built;
-`TabNav` restyled as fixed-order folder tabs. Tokens are frozen — build against them.
-
-## Claude 2 — Home
-
-1. `Home.jsx` — flex column layout, no CSS grid.
-2. `ViewsCard` / `FollowerCard` — plain rectangles on `.card`, stacked vertically with flex, views on top.
-   Label plus number, nothing decorative.
-3. `TopReelsCard` — render the top three reels through `src/shared/ReelCard.jsx`, laid out with flex. Do not
-   write your own card markup and do not edit `ReelCard`.
-4. Empty state: "No reels logged yet — add your first above."
-
-## Claude 3 — Reel Input
-
-1. Every container moves to the design language above.
-2. `ReelForm` / `StatField` — inputs and selects use `.field` from `tokens.css`. They stay controlled; leave
-   `onChange` / `onClick` alone.
-3. `RankResult` — same treatment as Home's stat boxes so the tabs read as one system. Tier labels use token
-   colors.
-
-Known violations to clear: inline `borderRadius` in `StatField.jsx` and `ReelForm.jsx`, plus several
-`border: '1px solid var(--line)'`. Inline styles beat the global radius reset, so they have to be deleted by
-hand.
-
-## AI chat — both workers
-
-See `src/tabs/AIChat/AICHAT.md`. Claude 2 builds the message thread, Claude 3 builds the composer, and they
-run in parallel against contracts Claude 1 freezes in `AIChat.jsx` first.
-
-## Requests
-
-Need a new token, a change to `ReelCard`, or a new field on `Reel`? Write one line —
-`REQUEST(Claude 1): add --glow-inset token` — and wait. Do not add it locally.
-
-## Done means
-
-- Zero rounded corners, zero borders or 1px rings; tight deep-blue glows throughout.
-- Poppins is the only font family; no hex or rgba outside `tokens.css`.
-- Home stacks views and follower increase vertically and renders top reels through `ReelCard`.
-- Reel Input and AI Chat match Home visually, with every handler and data flow unchanged.
+- Do not touch `useReels`, `rankReel`, `buildPrompt`, `addReel`, `onLogged`, or `getPerformanceInsights` —
+  keep every handler and prop exactly as it is.
+- A new token, a change to `ReelCard`, or a new field on `Reel` is a shared, cross-tab surface — extend
+  `tokens.css` / `ReelCard.jsx` / `types.js` deliberately and update every call site, rather than
+  reimplementing the same thing locally inside one tab.

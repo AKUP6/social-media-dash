@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { getPerformanceInsights } from '../../lib/ranking.js'
-import { buildPrompt } from '../../lib/promptBuilder.js'
-import { generateIdeas } from './ideaGenerator.js'
+import { generateAssistantReply } from './components/AILogic/generateAssistantReply.js'
+import BackButton from '../../components/BackButton.jsx'
 import MessageThread from './components/MessageThread.jsx'
 import Composer from './components/Composer.jsx'
 
@@ -12,7 +11,7 @@ import Composer from './components/Composer.jsx'
  * (Claude 3) are presentational: props in, callbacks out. Neither imports the
  * other. The prop shapes below are frozen while the workers build.
  */
-export default function AIChat({ reels }) {
+export default function AIChat({ reels, onNavigate }) {
   const [messages, setMessages] = useState([])
   const [draft, setDraft] = useState('')
   const [reelType, setReelType] = useState('educational')
@@ -34,65 +33,81 @@ export default function AIChat({ reels }) {
     setDraft('')
     setIsGenerating(true)
 
-    const rankContext = getPerformanceInsights(reels)
-    const builtPrompt = buildPrompt({ reelType, goal, rankContext })
-
-    window.setTimeout(() => {
-      const ideas = generateIdeas({ reelType, goal, rankContext })
-      setMessages((prev) =>
-        prev.map((message) =>
-          message.id === pendingId
-            ? {
-                id: pendingId,
-                role: 'assistant',
-                text: `Here ${ideas.length === 1 ? 'is' : 'are'} ${ideas.length} ideas built from your best performing reels.`,
-                ideas,
-                prompt: builtPrompt,
-              }
-            : message,
-        ),
-      )
-      setIsGenerating(false)
-    }, 350)
+    generateAssistantReply({ reelType, goal, reels, message: text })
+      .then(({ ideas, prompt }) => {
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === pendingId
+              ? {
+                  id: pendingId,
+                  role: 'assistant',
+                  text: `Here ${ideas.length === 1 ? 'is' : 'are'} ${ideas.length} ideas built from your best performing reels.`,
+                  ideas,
+                  prompt,
+                }
+              : message,
+          ),
+        )
+      })
+      .catch((err) => {
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === pendingId
+              ? { id: pendingId, role: 'assistant', text: `Couldn't generate ideas: ${err.message}` }
+              : message,
+          ),
+        )
+      })
+      .finally(() => setIsGenerating(false))
   }
 
+  const hasMessages = messages.length > 0
+
   return (
+    // Bounded to the viewport, so this tab never grows past the screen and
+    // the outer page never scrolls (no rubber-band/tension scrolling at the
+    // document level). <main>'s top and bottom padding are cancelled here so
+    // the tab runs edge to edge instead of stopping short of the bottom.
+    // Only the thread pane below scrolls — that is "the page contents".
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 'var(--space-5)',
         width: '100%',
         maxWidth: 760,
         margin: '0 auto',
+        marginTop: 'calc(-1 * var(--space-8))',
+        marginBottom: 'calc(-1 * var(--space-8))',
+        height: '100dvh',
+        justifyContent: hasMessages ? undefined : 'center',
       }}
     >
-      <MessageThread messages={messages} />
+      <div style={{ position: 'fixed', top: 'var(--space-8)', left: 'var(--space-4)' }}>
+        <BackButton label="Back to home" onClick={() => onNavigate('home')} />
+      </div>
 
-      {/* Sticky rather than fixed: the thread grows with the page, and the
-          composer stays parked at the bottom of the viewport like a chat app.
-          The wrapper is filled with the page colour and padded so the thread
-          scrolls cleanly underneath instead of showing through the composer. */}
       <div
+        className="no-scrollbar"
         style={{
-          position: 'sticky',
-          bottom: 0,
-          marginTop: 'auto',
-          padding: 'var(--space-4) 0 var(--space-6)',
-          background: 'var(--bg)',
+          flex: hasMessages ? 1 : undefined,
+          minHeight: 0,
+          overflowY: hasMessages ? 'auto' : 'visible',
+          overscrollBehavior: 'contain',
         }}
       >
-        <Composer
-          value={draft}
-          onChange={setDraft}
-          reelType={reelType}
-          goal={goal}
-          onReelTypeChange={setReelType}
-          onGoalChange={setGoal}
-          onSend={handleSend}
-          isGenerating={isGenerating}
-        />
+        <MessageThread messages={messages} />
       </div>
+
+      <Composer
+        value={draft}
+        onChange={setDraft}
+        reelType={reelType}
+        goal={goal}
+        onReelTypeChange={setReelType}
+        onGoalChange={setGoal}
+        onSend={handleSend}
+        isGenerating={isGenerating}
+      />
     </div>
   )
 }

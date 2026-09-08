@@ -6,13 +6,14 @@
  *  @property {string} hook              // the opening line/hook text
  *  @property {number} views
  *  @property {number} shareRate         // 0..1
- *  @property {number} saveRate          // 0..1
+ *  @property {number} skipRate          // 0..1
  *  @property {number} likeRate          // 0..1
  *  @property {number} followsFromReel
  *  @property {string} niche             // e.g. "front ensemble", "broad"
  *  @property {string} datePosted        // ISO string
- *  @property {string} [thumbnail]       // cover image URL; optional — ReelCard
- *                                       // falls back to a placeholder block
+ *  @property {string} [thumbnail]       // cover image URL (or data: URI); optional —
+ *                                       // ReelCard falls back to a placeholder block
+ *  @property {string} [description]     // longer free-text notes on the reel; optional
  */
 
 /** @typedef {Object} Metrics

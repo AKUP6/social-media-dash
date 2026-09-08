@@ -35,19 +35,21 @@ body {
   --ink: #0b2a4a;
   --muted: #6b8cae;
   --line: #cfe2fa;
+  --danger: #d1293d;
 
   /* Channel values so glows and tints can be built at any opacity without
      redeclaring a hex anywhere. */
   --primary-rgb: 77, 163, 255;
   --primary-deep-rgb: 30, 111, 217;
+  --danger-rgb: 209, 41, 61;
 
   /* Single switch point for the glow colour — every glow token reads this. */
   --glow-rgb: var(--primary-deep-rgb);
 
-  /* Poppins is the only typeface. --font-mono is kept as a token name so
-     existing `.mono` usages keep working — it resolves to Poppins too. */
-  --font-display: 'Poppins', sans-serif;
-  --font-mono: 'Poppins', sans-serif;
+  /* Nunito is the only typeface. --font-mono is kept as a token name so
+     existing `.mono` usages keep working — it resolves to Nunito too. */
+  --font-display: 'Nunito', sans-serif;
+  --font-mono: 'Nunito', sans-serif;
 
   /* No rounded corners anywhere. */
   --radius-card: 0;
@@ -132,11 +134,92 @@ img {
   padding: var(--space-5);
 }
 
+/* Scrollable regions that should scroll without showing a scrollbar track. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fade-in 200ms ease-out;
+}
+
+/* Same fade but landing at the backdrop's resting opacity (0.6) instead of
+   1, so a scrim doesn't flash full-black before snapping back down. */
+@keyframes fade-in-backdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.6;
+  }
+}
+
+.fade-in-backdrop {
+  animation: fade-in-backdrop 200ms ease-out;
+}
+
+/* Mirrors fade-in-backdrop for closing: fades from the backdrop's resting
+   0.6 down to 0, instead of snapping up to 1 first like plain .fade-out would. */
+@keyframes fade-out-backdrop {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-out-backdrop {
+  animation: fade-out-backdrop 200ms ease-out forwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fade-in-up 350ms ease-out;
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-out {
+  animation: fade-out 200ms ease-out forwards;
+}
+
 /* ---------------------------------------------------------------------------
    Type
    --------------------------------------------------------------------------- */
 
-/* Numbers, stats, and captions. Poppins with tabular figures so digits align. */
+/* Numbers, stats, and captions. Nunito with tabular figures so digits align. */
 .mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -214,6 +297,11 @@ img {
   color: var(--surface-alt);
 }
 
+.btn-danger {
+  background: var(--danger);
+  color: var(--surface-alt);
+}
+
 /* Hover lights the glow up; press pulls it back in. */
 .btn:hover:not(:disabled) {
   box-shadow: var(--glow-strong);
@@ -221,6 +309,14 @@ img {
 
 .btn:active:not(:disabled) {
   box-shadow: 0 0 6px rgba(var(--primary-deep-rgb), 0.45);
+}
+
+.btn-danger:hover:not(:disabled) {
+  box-shadow: 0 0 15px rgba(var(--danger-rgb), 0.55);
+}
+
+.btn-danger:active:not(:disabled) {
+  box-shadow: 0 0 6px rgba(var(--danger-rgb), 0.45);
 }
 
 .btn:disabled {

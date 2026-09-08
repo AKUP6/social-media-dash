@@ -5,7 +5,7 @@
 const WEIGHTS = {
   views: 0.35,
   shareRate: 0.25,
-  saveRate: 0.15,
+  skipRate: 0.15,
   likeRate: 0.15,
   followsFromReel: 0.1,
 }
@@ -86,7 +86,7 @@ export function getPerformanceInsights(reels) {
 
   const averages = {
     shareRate: reels.reduce((sum, r) => sum + r.shareRate, 0) / reels.length,
-    saveRate: reels.reduce((sum, r) => sum + r.saveRate, 0) / reels.length,
+    skipRate: reels.reduce((sum, r) => sum + r.skipRate, 0) / reels.length,
     likeRate: reels.reduce((sum, r) => sum + r.likeRate, 0) / reels.length,
   }
 
